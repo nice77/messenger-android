@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">SP Messenger</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_home">Список</string>
+    <string name="title_dashboard">Чат</string>
+    <string name="title_notifications">Настройки</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="login">Авторизация</string>
