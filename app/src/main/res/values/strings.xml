@@ -1,6 +1,14 @@
 <resources>
-    <string name="app_name">messenger</string>
+    <string name="app_name">SP Messenger</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Авторизация</string>
+    <string name="emailReg">Email</string>
+    <string name="passwordReg">Password</string>
+    <string name="register">Регистрация</string>
+    <string name="go_to_login">Авторизоваться</string>
+    <string name="go_to_register">Зарегестрироваться</string>
 </resources>
