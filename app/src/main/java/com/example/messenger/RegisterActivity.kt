@@ -45,7 +45,7 @@ class RegisterActivity : AppCompatActivity() {
             if (validation.isPasswordValid(password)) {
                 println("Пароль верный")
             } else {
-                emailEditText.error = "Пароль неверный"
+                passwordEditText.error = "Пароль неверный"
                 return@setOnClickListener
             }
 
