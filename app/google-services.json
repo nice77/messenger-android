@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "557521840454",
+    "project_id": "summerpracticmessanger",
+    "storage_bucket": "summerpracticmessanger.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:557521840454:android:90ab525a33c38b32485d47",
+        "android_client_info": {
+          "package_name": "com.example.messenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "557521840454-at86psf19ud4lin04tcsia4d6kqktrvn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO0c1FpX7JgvfuLbSaUvQsua5ifs7cE5k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "557521840454-at86psf19ud4lin04tcsia4d6kqktrvn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
