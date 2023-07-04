@@ -1,24 +1,16 @@
 package com.example.messenger
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.messenger.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.getValue
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import java.io.File
-import java.io.FileWriter
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,7 +37,8 @@ class MainActivity : AppCompatActivity() {
         } else {
             // Пользователь авторизован, выполняем нужные действия
 //            downloadDataFromDatabase(this)
-            Snackbar.make(binding.root, "Приветствую ${currentUser.email}", Snackbar.LENGTH_LONG).show()
+            Snackbar.make(binding.root, "Приветствую ${currentUser.email}", Snackbar.LENGTH_LONG)
+                .show()
 
 //            val dataRepository = DataRepository.getInstance()
 //            dataRepository.fetchUsersFromDatabase {data ->
@@ -62,6 +55,7 @@ class MainActivity : AppCompatActivity() {
             )
             setupActionBarWithNavController(navController, appBarConfiguration)
             binding.navView.setupWithNavController(navController)
+            NavigationUI.setupWithNavController(binding.navView, navController, false)
         }
     }
 
