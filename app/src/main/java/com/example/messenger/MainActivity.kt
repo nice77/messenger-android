@@ -1,5 +1,6 @@
 package com.example.messenger
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -8,7 +9,16 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.messenger.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.getValue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.io.File
+import java.io.FileWriter
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,9 +40,18 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)
             startActivity(intent)
 
+
             finish()
         } else {
             // Пользователь авторизован, выполняем нужные действия
+//            downloadDataFromDatabase(this)
+            Snackbar.make(binding.root, "Приветствую ${currentUser.email}", Snackbar.LENGTH_LONG).show()
+
+//            val dataRepository = DataRepository.getInstance()
+//            dataRepository.fetchUsersFromDatabase {data ->
+//                println(data!=null)
+//            }
+
             val navController = findNavController(R.id.nav_host_fragment_activity_main)
             // Passing each menu ID as a set of Ids because each
             // menu should be considered as top level destinations.
@@ -45,4 +64,38 @@ class MainActivity : AppCompatActivity() {
             binding.navView.setupWithNavController(navController)
         }
     }
+
+
+//    fun downloadDataFromDatabase(context: Context) {
+//        val database = FirebaseDatabase.getInstance()
+//        val databaseRef = database.reference
+//
+//        // Определяем имя файла для сохранения данных
+//        val fileName = "data.json"
+//
+//        // Получаем путь к внутренней директории приложения
+//        val internalDir = context.filesDir
+//
+//        // Создаем объект файла
+//        val file = File(internalDir, fileName)
+//
+//        // Запускаем корутину для выполнения операции в фоновом потоке
+//        GlobalScope.launch(Dispatchers.IO) {
+//            try {
+//                // Получаем данные из Realtime Database
+//                val dataSnapshot = databaseRef.get().await()
+//                val json = dataSnapshot.getValue<String>()
+//
+//                // Сохраняем данные в JSON файл
+//                FileWriter(file).use { writer ->
+//                    writer.write(json ?: "")
+//                }
+//
+//                println("Данные успешно скачаны и сохранены в файл $fileName")
+//            } catch (e: Exception) {
+//                println("Ошибка при скачивании данных: ${e.message}")
+//            }
+//        }
+//    }
+
 }
