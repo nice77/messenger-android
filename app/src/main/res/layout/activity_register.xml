@@ -32,12 +32,24 @@
         android:autofillHints=""
         tools:ignore="VisualLintTextFieldSize" />
 
+    <EditText
+        android:id="@+id/loginNameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/passwordEditText"
+        android:layout_marginBottom="8dp"
+        android:hint="@string/LoginName"
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:autofillHints=""
+        tools:ignore="VisualLintTextFieldSize" />
+
     <Button
         android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/register"
-        android:layout_below="@id/passwordEditText"
+        android:layout_below="@id/loginNameEditText"
         tools:ignore="VisualLintButtonSize" />
 
     <Button

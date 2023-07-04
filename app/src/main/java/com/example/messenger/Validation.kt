@@ -22,4 +22,11 @@ class Validation {
         val matcher = pattern.matcher(email)
         return matcher.matches()
     }
+
+    fun isLoginName(LoginName: String) : Boolean {
+        val usernameRegex = "^[a-zA-Z0-9_]{3,20}$"
+        val pattern = Pattern.compile(usernameRegex)
+        val matcher = pattern.matcher(LoginName)
+        return matcher.matches()
+    }
 }

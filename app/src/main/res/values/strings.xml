@@ -11,4 +11,5 @@
     <string name="register">Регистрация</string>
     <string name="go_to_login">Авторизоваться</string>
     <string name="go_to_register">Зарегестрироваться</string>
+    <string name="LoginName">Логин</string>
 </resources>
