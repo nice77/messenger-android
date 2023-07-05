@@ -1,14 +1,21 @@
 package com.example.messenger
 
+import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.messenger.databinding.ActivityMainBinding
+import com.example.messenger.ui.home.HomeFragment
+import com.example.messenger.ui.notifications.NotificationsFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 
@@ -16,9 +23,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var firebaseAuth: FirebaseAuth
+    private final val SWITCH_PREFS: String = "SWITCH";
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        unit()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -59,7 +69,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
 //    fun downloadDataFromDatabase(context: Context) {
 //        val database = FirebaseDatabase.getInstance()
 //        val databaseRef = database.reference
@@ -91,5 +100,25 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        }
 //    }
+private fun unit(){
+    val pref = getSharedPreferences("Default", MODE_PRIVATE)
+    if(pref.getBoolean(SWITCH_PREFS,false)){
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+    }
+
+}
+
+
+    // Функция для смены темы
+    fun switchTheme(context: Activity, isDarkTheme: Boolean) {
+        // Устанавливаем режим темы
+        if (isDarkTheme) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+        // Пересоздаем активность, чтобы применить изменения
+        context.recreate()
+    }
 
 }
