@@ -27,4 +27,6 @@
     <string name="chatFoldersFragment">Папки с Чатами</string>
     <string name="energoyavingFragment">"Энергоэффективность "</string>
     <string name="notificationsAndSoundsFragment">Уведомления и Звук</string>
+    <string name="default_notification_channel_id">mess</string>
+    <string name="channel_id">mess</string>
 </resources>
