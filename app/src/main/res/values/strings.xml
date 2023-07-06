@@ -21,4 +21,10 @@
     <string name="ChatFolders">папки с чатами</string>
     <string name="Exit">Выйти погулять</string>
     <string name="theme">Светлая</string>
+    <string name="themeFragment">Темы</string>
+    <string name="dataAndMemoryFragment">Данные и память</string>
+    <string name="confidentialityFragment">Конфиденциальность</string>
+    <string name="chatFoldersFragment">Папки с Чатами</string>
+    <string name="energoyavingFragment">"Энергоэффективность "</string>
+    <string name="notificationsAndSoundsFragment">Уведомления и Звук</string>
 </resources>

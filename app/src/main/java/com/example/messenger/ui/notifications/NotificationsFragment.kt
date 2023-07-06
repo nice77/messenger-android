@@ -1,6 +1,7 @@
 package com.example.messenger.ui.notifications
 
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,8 +12,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.messenger.LoginActivity
 import com.example.messenger.R
 import com.example.messenger.databinding.FragmentNotificationsBinding
+import com.google.firebase.auth.FirebaseAuth
 
 
 class NotificationsFragment : Fragment() {
@@ -57,8 +60,26 @@ class NotificationsFragment : Fragment() {
                 findNavController().navigate(R.id.action_navigation_notifications_to_notificationsAndSoundsFragment)
             }
             //кнопку выхода из ака-47 реализуйте плез
+            btnExit.setOnClickListener {
+                // Выполните выход из аккаунта
+                logout()
+
+                // Переход на окно авторизации
+                goToLoginActivity()
+            }
         }
 
         return root
+    }
+
+    private fun logout() {
+        // Выполните выход из аккаунта, используя FirebaseAuth
+        FirebaseAuth.getInstance().signOut()
+    }
+
+    private fun goToLoginActivity() {
+        val intent = Intent(requireContext(), LoginActivity::class.java)
+        startActivity(intent)
+        requireActivity().finish()
     }
 }

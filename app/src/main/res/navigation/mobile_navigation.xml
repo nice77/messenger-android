@@ -44,26 +44,26 @@
     <fragment
         android:id="@+id/chatFoldersFragment"
         android:name="com.example.messenger.ui.settings.chatFolders.ChatFoldersFragment"
-        android:label="ChatFoldersFragment" />
+        android:label="@string/chatFoldersFragment" />
     <fragment
         android:id="@+id/confidentialityFragment"
         android:name="com.example.messenger.ui.settings.confidentiality.ConfidentialityFragment"
-        android:label="ConfidentialityFragment" />
+        android:label="@string/confidentialityFragment" />
     <fragment
         android:id="@+id/dataAndMemoryFragment"
         android:name="com.example.messenger.ui.settings.dataAndMemory.DataAndMemoryFragment"
-        android:label="DataAndMemoryFragment" />
+        android:label="@string/dataAndMemoryFragment" />
     <fragment
         android:id="@+id/energoyavingFragment"
         android:name="com.example.messenger.ui.settings.energoyaving.EnergoyavingFragment"
-        android:label="EnergoyavingFragment" />
+        android:label="@string/energoyavingFragment" />
     <fragment
         android:id="@+id/notificationsAndSoundsFragment"
         android:name="com.example.messenger.ui.settings.notificationsAndSounds.NotificationsAndSoundsFragment"
-        android:label="NotificationsAndSoundsFragment" />
+        android:label="@string/notificationsAndSoundsFragment" />
     <fragment
         android:id="@+id/themeFragment"
         android:name="com.example.messenger.ui.settings.theme.ThemeFragment"
-        android:label="fragment_theme"
+        android:label="@string/themeFragment"
         tools:layout="@layout/fragment_theme" />
 </navigation>
