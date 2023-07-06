@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity() {
 //            dataRepository.fetchUsersFromDatabase {data ->
 //                println(data!=null)
 //            }
-
             val navController = findNavController(R.id.nav_host_fragment_activity_main)
             // Passing each menu ID as a set of Ids because each
             // menu should be considered as top level destinations.
@@ -65,7 +64,7 @@ class MainActivity : AppCompatActivity() {
             )
             setupActionBarWithNavController(navController, appBarConfiguration)
             binding.navView.setupWithNavController(navController)
-            NavigationUI.setupWithNavController(binding.navView, navController, false)
+//            NavigationUI.setupWithNavController(binding.navView, navController, false)
         }
     }
 

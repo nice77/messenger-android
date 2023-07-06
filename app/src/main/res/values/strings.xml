@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SP Messenger</string>
-    <string name="title_home">Список</string>
-    <string name="title_dashboard">Чат</string>
+    <string name="title_home">Чаты</string>
+    <string name="title_dashboard">Диалог</string>
     <string name="title_notifications">Настройки</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -20,4 +20,5 @@
     <string name="Energoyaving">"Энергосбережение"</string>
     <string name="ChatFolders">папки с чатами</string>
     <string name="Exit">Выйти погулять</string>
+    <string name="theme">Светлая</string>
 </resources>
