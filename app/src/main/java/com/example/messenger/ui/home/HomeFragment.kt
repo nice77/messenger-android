@@ -8,8 +8,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.messenger.databinding.FragmentHomeBinding
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 
 class HomeFragment : Fragment() {
 
@@ -38,6 +36,8 @@ class HomeFragment : Fragment() {
 //        val myRef = database.getReference("message")
 //
 //        myRef.setValue("Hello, World!")
+        //            NavigationUI.setupWithNavController(binding.navView, navController, false)
+
         return root
     }
 
