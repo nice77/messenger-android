@@ -12,4 +12,12 @@
     <string name="go_to_login">Авторизоваться</string>
     <string name="go_to_register">Зарегестрироваться</string>
     <string name="LoginName">Логин</string>
+    <string name="Theme">Тема</string>
+    <string name="light">Светлая</string>
+    <string name="Confidentiality">Конфиденциальность</string>
+    <string name="NotificationsAndSounds">Уведомелния и звуки</string>
+    <string name="DataAndMemory">Данные и память</string>
+    <string name="Energoyaving">"Энергосбережение"</string>
+    <string name="ChatFolders">папки с чатами</string>
+    <string name="Exit">Выйти погулять</string>
 </resources>
