@@ -1,11 +1,14 @@
 package com.example.messenger
 
+import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.messenger.databinding.ActivityMainBinding
@@ -16,11 +19,18 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var firebaseAuth: FirebaseAuth
+    private val SWITCH_PREFS: String = "SWITCH"
+    private lateinit var sharedPreferences: SharedPreferences
+    private val PREF_FIRST_RUN = "first_run"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        unit()
+
         binding = ActivityMainBinding.inflate(layoutInflater)
+
+
         setContentView(binding.root)
 
         firebaseAuth = FirebaseAuth.getInstance()
@@ -37,14 +47,24 @@ class MainActivity : AppCompatActivity() {
         } else {
             // Пользователь авторизован, выполняем нужные действия
 //            downloadDataFromDatabase(this)
-            Snackbar.make(binding.root, "Приветствую ${currentUser.email}", Snackbar.LENGTH_LONG)
-                .show()
+
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+            val isFirstRun = sharedPreferences.getBoolean(PREF_FIRST_RUN, true)
+
+            if (isFirstRun) {
+                Snackbar.make(
+                    binding.root,
+                    "Приветствую ${currentUser.email}",
+                    Snackbar.LENGTH_LONG
+                )
+                    .show()
+                sharedPreferences.edit().putBoolean(PREF_FIRST_RUN, false).apply()
+            }
 
 //            val dataRepository = DataRepository.getInstance()
 //            dataRepository.fetchUsersFromDatabase {data ->
 //                println(data!=null)
 //            }
-
             val navController = findNavController(R.id.nav_host_fragment_activity_main)
             // Passing each menu ID as a set of Ids because each
             // menu should be considered as top level destinations.
@@ -55,12 +75,11 @@ class MainActivity : AppCompatActivity() {
             )
             setupActionBarWithNavController(navController, appBarConfiguration)
             binding.navView.setupWithNavController(navController)
-            NavigationUI.setupWithNavController(binding.navView, navController, false)
+//            NavigationUI.setupWithNavController(binding.navView, navController, false)
         }
     }
 
-
-//    fun downloadDataFromDatabase(context: Context) {
+    //    fun downloadDataFromDatabase(context: Context) {
 //        val database = FirebaseDatabase.getInstance()
 //        val databaseRef = database.reference
 //
@@ -91,5 +110,25 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        }
 //    }
+    private fun unit() {
+        val pref = getSharedPreferences("Default", MODE_PRIVATE)
+        if (pref.getBoolean(SWITCH_PREFS, false)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
+
+    }
+
+
+    // Функция для смены темы
+    fun switchTheme(context: Activity, isDarkTheme: Boolean) {
+        // Устанавливаем режим темы
+        if (isDarkTheme) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+        // Пересоздаем активность, чтобы применить изменения
+        context.recreate()
+    }
 
 }

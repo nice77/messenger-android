@@ -25,5 +25,49 @@
         android:id="@+id/navigation_settings"
         android:name="com.example.messenger.ui.settings.SettingsFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_navigation_notifications_to_themeFragment"
+            app:destination="@id/themeFragment" />
+        <action
+            android:id="@+id/action_navigation_notifications_to_chatFoldersFragment"
+            app:destination="@id/chatFoldersFragment" />
+        <action
+            android:id="@+id/action_navigation_notifications_to_confidentialityFragment"
+            app:destination="@id/confidentialityFragment" />
+        <action
+            android:id="@+id/action_navigation_notifications_to_dataAndMemoryFragment"
+            app:destination="@id/dataAndMemoryFragment" />
+        <action
+            android:id="@+id/action_navigation_notifications_to_energoyavingFragment"
+            app:destination="@id/energoyavingFragment" />
+        <action
+            android:id="@+id/action_navigation_notifications_to_notificationsAndSoundsFragment"
+            app:destination="@id/notificationsAndSoundsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatFoldersFragment"
+        android:name="com.example.messenger.ui.settings.chatFolders.ChatFoldersFragment"
+        android:label="@string/chatFoldersFragment" />
+    <fragment
+        android:id="@+id/confidentialityFragment"
+        android:name="com.example.messenger.ui.settings.confidentiality.ConfidentialityFragment"
+        android:label="@string/confidentialityFragment" />
+    <fragment
+        android:id="@+id/dataAndMemoryFragment"
+        android:name="com.example.messenger.ui.settings.dataAndMemory.DataAndMemoryFragment"
+        android:label="@string/dataAndMemoryFragment" />
+    <fragment
+        android:id="@+id/energoyavingFragment"
+        android:name="com.example.messenger.ui.settings.energoyaving.EnergoyavingFragment"
+        android:label="@string/energoyavingFragment" />
+    <fragment
+        android:id="@+id/notificationsAndSoundsFragment"
+        android:name="com.example.messenger.ui.settings.notificationsAndSounds.NotificationsAndSoundsFragment"
+        android:label="@string/notificationsAndSoundsFragment" />
+    <fragment
+        android:id="@+id/themeFragment"
+        android:name="com.example.messenger.ui.settings.theme.ThemeFragment"
+        android:label="@string/themeFragment"
+        tools:layout="@layout/fragment_theme" />
 </navigation>
