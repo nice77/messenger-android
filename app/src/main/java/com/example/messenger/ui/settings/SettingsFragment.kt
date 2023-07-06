@@ -14,7 +14,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.messenger.LoginActivity
 import com.example.messenger.R
-import com.example.messenger.databinding.FragmentNotificationsBinding
 import com.google.firebase.auth.FirebaseAuth
 
 import com.example.messenger.databinding.FragmentSettingsBinding

@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.messenger.databinding.ActivityMainBinding
@@ -75,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             )
             setupActionBarWithNavController(navController, appBarConfiguration)
             binding.navView.setupWithNavController(navController)
-//            NavigationUI.setupWithNavController(binding.navView, navController, false)
+            NavigationUI.setupWithNavController(binding.navView, navController, false)
         }
     }
 
