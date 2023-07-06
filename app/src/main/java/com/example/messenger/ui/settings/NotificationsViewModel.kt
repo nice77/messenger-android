@@ -1,4 +1,4 @@
-package com.example.messenger.ui.notifications
+package com.example.messenger.ui.settings
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

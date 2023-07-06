@@ -1,4 +1,4 @@
-package com.example.messenger.ui.notifications
+package com.example.messenger.ui.settings
 
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
@@ -14,13 +14,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.messenger.LoginActivity
 import com.example.messenger.R
-import com.example.messenger.databinding.FragmentNotificationsBinding
 import com.google.firebase.auth.FirebaseAuth
 
+import com.example.messenger.databinding.FragmentSettingsBinding
 
-class NotificationsFragment : Fragment() {
+class SettingsFragment : Fragment() {
 
-    private var _binding: FragmentNotificationsBinding? = null
+    private var _binding: FragmentSettingsBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -33,7 +33,7 @@ class NotificationsFragment : Fragment() {
         val notificationsViewModel =
             ViewModelProvider(this).get(NotificationsViewModel::class.java)
 
-        _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         val textView: TextView = binding.textNotifications
@@ -42,8 +42,8 @@ class NotificationsFragment : Fragment() {
         }
         binding?.run {
             btnTheme.setOnClickListener {
-            findNavController().navigate(R.id.action_navigation_notifications_to_themeFragment)
-        }
+                findNavController().navigate(R.id.action_navigation_notifications_to_themeFragment)
+            }
             btnChatFolders.setOnClickListener {
                 findNavController().navigate(R.id.action_navigation_notifications_to_chatFoldersFragment)
             }
