@@ -42,8 +42,8 @@ class SettingsFragment : Fragment() {
         }
         binding?.run {
             btnTheme.setOnClickListener {
-            findNavController().navigate(R.id.action_navigation_notifications_to_themeFragment)
-        }
+                findNavController().navigate(R.id.action_navigation_notifications_to_themeFragment)
+            }
             btnChatFolders.setOnClickListener {
                 findNavController().navigate(R.id.action_navigation_notifications_to_chatFoldersFragment)
             }
