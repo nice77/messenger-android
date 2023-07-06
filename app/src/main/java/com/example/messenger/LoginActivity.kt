@@ -9,6 +9,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var emailEditText: EditText
@@ -16,7 +19,10 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var loginButton: Button
     private lateinit var goToRegisterButton: Button
 
+
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var usersRef: DatabaseReference
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +36,8 @@ class LoginActivity : AppCompatActivity() {
         val validation = Validation()
 
         firebaseAuth = FirebaseAuth.getInstance()
+        usersRef = FirebaseDatabase.getInstance().getReference("users")
+
 
         loginButton.setOnClickListener {
 
@@ -68,6 +76,25 @@ class LoginActivity : AppCompatActivity() {
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    val firebaseUser = firebaseAuth.currentUser
+                    val userId = firebaseUser?.uid
+                    var FCMtoken = ""
+
+
+                    FirebaseMessaging.getInstance().token
+                        .addOnSuccessListener { token ->
+                            FCMtoken = token
+                            userId?.let { usersRef.child(it).child("FCMtoken").setValue(FCMtoken) }
+
+                            // Авторизация успешна, переходим на следующую активити
+                            val intent = Intent(this, MainActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
+                        .addOnFailureListener { exception ->
+                            // Обработка ошибки при получении токена
+                        }
+
                     // Авторизация успешна, переходим на следующую активити
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
