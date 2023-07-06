@@ -1,4 +1,4 @@
-package com.example.messenger.ui.dashboard
+package com.example.messenger.ui.dialog
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
