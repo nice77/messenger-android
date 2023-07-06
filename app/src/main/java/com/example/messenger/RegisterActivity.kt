@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var emailEditText: EditText
@@ -84,13 +85,32 @@ class RegisterActivity : AppCompatActivity() {
                     val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
                         val firebaseUser = firebaseAuth.currentUser
                         if (firebaseUser != null) {
-                            val userId = firebaseUser.uid
+
+
+                            var FCMtoken = ""
+
+
+                            FirebaseMessaging.getInstance().token
+                                .addOnSuccessListener { token ->
+                                    val userId = firebaseUser.uid
+                                    userId?.let { usersRef.child(it).setValue(User(loginName, userId, email, token)) }
+
+                                    // Авторизация успешна, переходим на следующую активити
+                                    val intent = Intent(this, MainActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
+                                }
+                                .addOnFailureListener { exception ->
+                                    // Обработка ошибки при получении токена
+                                }
+
+
+
+
 
                             // Создаем объект пользователя
-                            val user = User(loginName, userId, email)
 
                             // Добавляем пользователя в базу данных
-                            usersRef.child(userId).setValue(user)
 
                             // Регистрация успешна, переходим на следующую активити
                             val intent = Intent(this, MainActivity::class.java)

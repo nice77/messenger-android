@@ -15,6 +15,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.messenger.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : AppCompatActivity() {
 
@@ -61,6 +62,9 @@ class MainActivity : AppCompatActivity() {
                     .show()
                 sharedPreferences.edit().putBoolean(PREF_FIRST_RUN, false).apply()
             }
+
+
+
 
 //            val dataRepository = DataRepository.getInstance()
 //            dataRepository.fetchUsersFromDatabase {data ->
