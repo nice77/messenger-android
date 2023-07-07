@@ -13,6 +13,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.messenger.databinding.ActivityMainBinding
+import com.example.messenger.messanger.DataRepository
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity() {
 
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
             val isFirstRun = sharedPreferences.getBoolean(PREF_FIRST_RUN, true)
+            DataRepository.getInstance().fetchUsersFromDatabase {}
 
             if (isFirstRun) {
                 Snackbar.make(

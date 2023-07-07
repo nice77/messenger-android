@@ -83,7 +83,7 @@ class LoginActivity : AppCompatActivity() {
                     FirebaseMessaging.getInstance().token
                         .addOnSuccessListener { token ->
                             FCMtoken = token
-                            userId?.let { usersRef.child(it).child("FCMtoken").setValue(FCMtoken) }
+                            userId?.let { usersRef.child(it).child("fcmtoken").setValue(FCMtoken) }
 
                             // Авторизация успешна, переходим на следующую активити
                             val intent = Intent(this, MainActivity::class.java)
