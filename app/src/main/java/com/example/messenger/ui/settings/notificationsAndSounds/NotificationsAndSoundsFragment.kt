@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.messenger.R
+import com.example.messenger.MyFirebaseMessagingService
 import com.example.messenger.databinding.FragmentNotificationsAndSoundsBinding
 
 class NotificationsAndSoundsFragment : Fragment() {
