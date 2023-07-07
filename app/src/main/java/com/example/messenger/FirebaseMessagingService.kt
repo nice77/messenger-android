@@ -10,6 +10,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import kotlinx.coroutines.*
 
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
@@ -31,12 +32,17 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setContentText(body)
             .setAutoCancel(true)
 
+//        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+//        notificationManager.notify(0, notificationBuilder.build())
+
         // Отображение уведомления
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(0, notificationBuilder.build())
+        GlobalScope.launch(Dispatchers.Default) {
+            sendNotification(title, body)
+        }
+
     }
 
-    private fun sendNotification(remoteMessage: RemoteMessage) {
+    private fun sendNotification(title: String?, body: String?) {
         val intent = Intent(this, MainActivity::class.java)
 
         val pendingIntent = PendingIntent.getActivity(
@@ -49,8 +55,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.baseline_chat_24)
-            .setContentTitle(remoteMessage.notification?.title)
-            .setContentText(remoteMessage.notification?.body)
+            .setContentTitle(title)
+            .setContentText(body)
             .setAutoCancel(true)
             .setSound(defaultSoundUri)
             .setContentIntent(pendingIntent)
