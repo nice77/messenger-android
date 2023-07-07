@@ -47,22 +47,21 @@ class DataRepository private constructor() {
 
                         for (besedasChilfren in snapshot.child("beseda").children) {
                             val besedasI = besedasChilfren.getValue(Int::class.java)
-                            besedasI?.let {besedasId.add(it)}
+                            besedasI?.let { besedasId.add(it) }
                         }
-                        login?.let { id?.let { it1 -> email?.let { it2 ->
-                            fcmtoken?.let { it3 ->
-                                User(it, it1,
-                                    it2, it3, besedasId)
-                            }
-                        } } }
-                            ?.let { userList.add(it) }
 
+                        if (login != null && id != null && email != null && fcmtoken != null) {
+                            val user = User(login, id, email, fcmtoken, besedasId)
+                            userList.add(user)
+                        } else {
+                            val user = User("", "", "", "", besedasId)
+                            userList.add(user)
+                        }
 //                        val user = User(login = login, id = id, email = email, fcmtoken = fcmtoken)
 //                        val user = snapshot.getValue(User::class.java)
 
 //                        userList.add(user)
                     }
-
                     users = userList
                     callback(users)
                 }
