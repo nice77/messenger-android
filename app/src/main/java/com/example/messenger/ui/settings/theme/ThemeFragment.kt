@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.messenger.R
 import com.example.messenger.databinding.FragmentThemeBinding
@@ -29,6 +30,8 @@ class ThemeFragment : Fragment() {
         val pref = requireContext().getSharedPreferences("Default", Context.MODE_PRIVATE)
         if (pref.getBoolean(SWITCH_PREFS, false)) {
             switch.text = "Темная"
+            val textColor = ContextCompat.getColor(requireContext(), R.color.textButton)
+            switch.setTextColor(textColor)
             switch.isChecked = true
         } else {
             switch.text = "Светлая"
