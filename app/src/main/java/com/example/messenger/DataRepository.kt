@@ -8,6 +8,7 @@ class DataRepository private constructor() {
     private val databaseRef: DatabaseReference = database.reference
     private var users: List<User>? = null
     private var messages: List<Messeng>? = null
+    public lateinit var user: String
 
     companion object {
         private var instance: DataRepository? = null

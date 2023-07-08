@@ -13,6 +13,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.messenger.databinding.ActivityMainBinding
+import com.example.messenger.ui.dialog.DialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             // Пользователь авторизован, выполняем нужные действия
 //            downloadDataFromDatabase(this)
+            DataRepository.getInstance().user = currentUser.uid
 
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
             val isFirstRun = sharedPreferences.getBoolean(PREF_FIRST_RUN, true)

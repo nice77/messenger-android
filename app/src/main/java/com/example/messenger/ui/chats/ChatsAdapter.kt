@@ -15,8 +15,7 @@ class ChatsAdapter (
     ) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(chat : Chat) {
             binding.run {
-                tvUsername.text = chat.name
-                tvMessage.text = chat.message
+                tvUsername.text = chat.besedaId
 
                 root.setOnClickListener {
                     onItemClick(chat)

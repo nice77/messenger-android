@@ -94,7 +94,7 @@ class RegisterActivity : AppCompatActivity() {
                                 .addOnSuccessListener { token ->
                                     val userId = firebaseUser.uid
                                     userId?.let { usersRef.child(it).setValue(User(loginName, userId, email, token)) }
-
+                                    DataRepository.getInstance().user = userId
                                     // Авторизация успешна, переходим на следующую активити
                                     val intent = Intent(this, MainActivity::class.java)
                                     startActivity(intent)
