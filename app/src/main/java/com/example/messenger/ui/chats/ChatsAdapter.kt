@@ -4,21 +4,23 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.messenger.databinding.ChatItemBinding
+import com.example.messenger.messanger.Beseda
+import com.example.messenger.messanger.DataRepository
 
 class ChatsAdapter (
-    private val chats : List<Chat>,
-    private val onItemClick: (Chat) -> Unit
+    private var besedas : List<Beseda> = DataRepository.getInstance().getBesedas()!!,
+    private val onItemClick: (Beseda) -> Unit
 ) : RecyclerView.Adapter<ChatsAdapter.ChatsViewHolder>() {
     class ChatsViewHolder(
         private val binding: ChatItemBinding,
-        private val onItemClick: (Chat) -> Unit
+        private val onItemClick: (Beseda) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun onBind(chat : Chat) {
+        fun onBind(beseda : Beseda) {
             binding.run {
-                tvUsername.text = chat.besedaId
+                tvUsername.text = beseda.besedaId.toString()
 
                 root.setOnClickListener {
-                    onItemClick(chat)
+                    onItemClick(beseda)
                 }
             }
         }
@@ -32,10 +34,10 @@ class ChatsAdapter (
     }
 
     override fun getItemCount(): Int {
-        return chats.size
+        return besedas.size
     }
 
     override fun onBindViewHolder(holder: ChatsViewHolder, position: Int) {
-        holder.onBind(chats[position])
+        holder.onBind(besedas[position])
     }
 }

@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
 import android.preference.PreferenceManager
+import android.provider.ContactsContract.Data
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.findNavController
@@ -13,14 +15,20 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.messenger.databinding.ActivityMainBinding
-import com.example.messenger.ui.dialog.DialogFragment
+import com.example.messenger.messanger.Beseda
+import com.example.messenger.messanger.DataRepository
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import java.lang.Thread.sleep
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var firebaseAuth: FirebaseAuth
+//    private lateinit var firebaseAuth: FirebaseAuth
+    private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val fbDB = FirebaseDatabase.getInstance().reference
+    private val currUser = firebaseAuth.currentUser
     private val SWITCH_PREFS: String = "SWITCH"
     private lateinit var sharedPreferences: SharedPreferences
     private val PREF_FIRST_RUN = "first_run"
@@ -29,9 +37,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         unit()
+        if (currUser != null) {
+            DataRepository.getInstance().setUser(currUser.uid)
+            DataRepository.getInstance().getBesedasForUser(DataRepository.getInstance().getUser()) {
+                it?.let { it1 -> loadingFragment(it1) }
+            }
+//            for (snapshot in fbDB.child("users").child(currUser.uid).child("beseda")) {
+//
+//            }
+            println("Besedas called in main activity: " + DataRepository.getInstance().getBesedas())
+        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
-
+        //где-то тут вызываются пользовательские чаты
 
         setContentView(binding.root)
 
@@ -49,10 +67,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             // Пользователь авторизован, выполняем нужные действия
 //            downloadDataFromDatabase(this)
-            DataRepository.getInstance().user = currentUser.uid
+            println("Setting user " + currentUser.uid)
+            DataRepository.getInstance().setUser(currentUser.uid)
 
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
             val isFirstRun = sharedPreferences.getBoolean(PREF_FIRST_RUN, true)
+            DataRepository.getInstance().fetchUsersFromDatabase {}
 
             if (isFirstRun) {
                 Snackbar.make(
@@ -65,23 +85,10 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-
-
 //            val dataRepository = DataRepository.getInstance()
 //            dataRepository.fetchUsersFromDatabase {data ->
 //                println(data!=null)
 //            }
-            val navController = findNavController(R.id.nav_host_fragment_activity_main)
-            // Passing each menu ID as a set of Ids because each
-            // menu should be considered as top level destinations.
-            val appBarConfiguration = AppBarConfiguration(
-                setOf(
-                    R.id.navigation_chats, R.id.navigation_dialog, R.id.navigation_settings
-                )
-            )
-            setupActionBarWithNavController(navController, appBarConfiguration)
-            binding.navView.setupWithNavController(navController)
-            NavigationUI.setupWithNavController(binding.navView, navController, false)
         }
     }
 
@@ -137,4 +144,22 @@ class MainActivity : AppCompatActivity() {
         context.recreate()
     }
 
+    fun loadingFragment(besedasId : List<Beseda>) {
+        DataRepository.getInstance().setBesedas(besedasId)
+        val b = mutableListOf<Beseda>()
+        println(DataRepository.getInstance().getBesedas())
+        println("Arg: " + besedasId)
+        println("B: " + b)
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_chats, R.id.navigation_dialog, R.id.navigation_settings
+            )
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        binding.navView.setupWithNavController(navController)
+        NavigationUI.setupWithNavController(binding.navView, navController, false)
+    }
 }

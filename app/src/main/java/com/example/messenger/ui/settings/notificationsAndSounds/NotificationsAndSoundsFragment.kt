@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.messenger.MyFirebaseMessagingService
 import com.example.messenger.databinding.FragmentNotificationsAndSoundsBinding
+import com.example.messenger.messanger.CreateBeseda
+import com.example.messenger.messanger.DataRepository
 
 class NotificationsAndSoundsFragment : Fragment() {
     private var _binding: FragmentNotificationsAndSoundsBinding? = null
@@ -23,6 +25,20 @@ class NotificationsAndSoundsFragment : Fragment() {
         val root: View = binding.root
 
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        binding.button.setOnClickListener {
+
+            println("From notifications" + DataRepository.getInstance().getUser())
+
+            var listOfUserId: List<String> = emptyList()
+            DataRepository.getInstance().fetchUsersFromDatabase {users ->
+                users?.let {usersList ->
+                    listOfUserId = usersList.map {it.id}
+                }
+            }
+            val createBeseda = CreateBeseda()
+            createBeseda.createBeseda(listOfUserId)
+        }
 
         setHasOptionsMenu(true)
 

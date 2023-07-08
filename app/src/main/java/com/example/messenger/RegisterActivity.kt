@@ -7,6 +7,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.messenger.messanger.DataRepository
+import com.example.messenger.messanger.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -93,8 +95,11 @@ class RegisterActivity : AppCompatActivity() {
                             FirebaseMessaging.getInstance().token
                                 .addOnSuccessListener { token ->
                                     val userId = firebaseUser.uid
-                                    userId?.let { usersRef.child(it).setValue(User(loginName, userId, email, token)) }
-                                    DataRepository.getInstance().user = userId
+                                    userId?.let { usersRef.child(it).setValue(User(loginName, userId, email, token, emptyList())) }
+                                    DataRepository.getInstance().setUser(userId)
+
+
+
                                     // Авторизация успешна, переходим на следующую активити
                                     val intent = Intent(this, MainActivity::class.java)
                                     startActivity(intent)
