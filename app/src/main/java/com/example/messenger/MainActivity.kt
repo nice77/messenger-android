@@ -50,6 +50,8 @@ class MainActivity : AppCompatActivity() {
             // Пользователь авторизован, выполняем нужные действия
 //            downloadDataFromDatabase(this)
 
+            DataRepository.getInstance().user = currentUser.uid
+
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
             val isFirstRun = sharedPreferences.getBoolean(PREF_FIRST_RUN, true)
             DataRepository.getInstance().fetchUsersFromDatabase {}

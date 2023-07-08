@@ -8,6 +8,7 @@ class CreateBeseda {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val databaseRef: DatabaseReference = database.reference
 
+
     fun createBeseda(userIds: List<String>?) {
         if (userIds != null) {
             val besedaId = generateBesedaId()
@@ -27,6 +28,8 @@ class CreateBeseda {
             }
         }
     }
+
+    
 
     private fun generateBesedaId(): Int {
         // Генерируем уникальный айди для беседы
