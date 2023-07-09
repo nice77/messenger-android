@@ -193,9 +193,20 @@ class DataRepository private constructor() {
         val besedasRef = databaseRef.child("besedas")
         besedasRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val besedaList = dataSnapshot.children.mapNotNull { it.getValue(Beseda::class.java) }
-                    .filter { it.besedaId in besedaIds }
-                callback(besedaList)
+                val userList = mutableListOf<Beseda>()
+
+                dataSnapshot.children.forEach { snapshot ->
+                    val id = snapshot.child("besedaId").getValue(Int::class.java)
+                    val besedasId = mutableListOf<Messeng>()
+                    snapshot.child("messengs").children.mapNotNullTo(besedasId) { it.getValue(Messeng::class.java) }
+
+                    val user = id?.let { Beseda(besedasId, it) }
+                    user?.let { userList.add(it) }
+                }
+                callback(userList)
+//                val besedaList = dataSnapshot.children.mapNotNull { it.getValue(Beseda::class.java) }
+//                    .filter { it.besedaId in besedaIds }
+//                callback(besedaList)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
