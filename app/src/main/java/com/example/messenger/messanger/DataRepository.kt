@@ -13,7 +13,7 @@ class DataRepository private constructor() {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val besedaLiveData = MutableLiveData<List<Beseda>>()
     private val databaseRef: DatabaseReference = database.reference
-    private var users: List<User>? = null
+    private var users: MutableList<User>? = null
     private var besedas = mutableListOf<Beseda>()
     private var chatsFragment: ChatsFragment? = null
     private var user = ""
@@ -151,6 +151,15 @@ class DataRepository private constructor() {
                 callback(null)
             }
         })
+    }
+
+    fun getUsers(): MutableList<User>? {
+        if (this.users == null) {
+            fetchUsersFromDatabase {
+                it?.let { it1 -> this.users?.addAll(it1) }
+            }
+        }
+        return this.users
     }
 
 
