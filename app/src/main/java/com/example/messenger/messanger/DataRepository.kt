@@ -34,6 +34,10 @@ class DataRepository private constructor() {
         listenForBesedaChanges(user)
     }
 
+    fun addBeseda(ids: Beseda) {
+        this.besedas.add(ids)
+    }
+
 
     fun getBesedasLiveData() : LiveData<List<Beseda>> {
         return besedaLiveData
@@ -135,6 +139,19 @@ class DataRepository private constructor() {
         })
     }
 
+    fun hasCommonBesedaWithUser(user: User): Int? {
+        val currentUserBesedas = getBesedas() ?: return null
+        val userBesedas = user.beseda
+        for (currentUserBeseda in currentUserBesedas) {
+            for (userBeseda in userBesedas) {
+                if (currentUserBeseda.besedaId == userBeseda) {
+                    return currentUserBeseda.besedaId
+                }
+            }
+        }
+        return null
+    }
+
 
 
 
@@ -160,6 +177,12 @@ class DataRepository private constructor() {
             }
         }
         return this.users
+    }
+
+    fun setUsers() {
+        fetchUsersFromDatabase {
+            it?.let { it1 -> this.users?.addAll(it1) }
+        }
     }
 
 
