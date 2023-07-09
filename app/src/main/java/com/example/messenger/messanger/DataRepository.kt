@@ -3,6 +3,7 @@ package com.example.messenger.messanger
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.messenger.ui.chats.ChatsFragment
+import com.example.messenger.ui.dialog.DialogFragment
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
 import java.util.LinkedList
@@ -16,7 +17,18 @@ class DataRepository private constructor() {
     private var users: MutableList<User>? = null
     private var besedas = mutableListOf<Beseda>()
     private var chatsFragment: ChatsFragment? = null
+
+    private var dialogFragment: DialogFragment ?= null
     private var user = ""
+    private var beseda = ""
+
+    fun setBeseda(value: String) {
+        this.beseda = value
+    }
+
+    fun getBeseda(): String {
+        return this.beseda
+    }
 
     companion object {
         private var instance: DataRepository? = null
@@ -29,11 +41,64 @@ class DataRepository private constructor() {
         }
     }
 
+    fun getDB(): DatabaseReference {
+        return this.databaseRef
+    }
+
     fun setChatsFragment(fragment: ChatsFragment) {
         chatsFragment = fragment
         listenForBesedaChanges(user)
     }
 
+    fun setDialogFragment(fragment: DialogFragment) {
+        dialogFragment = fragment
+        listenForMessageChanges()
+    }
+
+    private fun listenForMessageChanges() {
+        val bRef = databaseRef.child("besedas").child(beseda).child("messengs")
+        bRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val mss = mutableListOf<Messeng>()
+                println("Beseda in datarepo: " + beseda)
+                for (s in snapshot.children) {
+                    val msg = s.getValue(Messeng::class.java)!!
+                    mss.add(msg)
+                }
+                if (dialogFragment!!.adapter!!.messages != mss) {
+                    dialogFragment?.updateMessages(mss)
+                    println("Data changed")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
+
+    fun listenForBesedaChanges(userId: String) {
+        val userRef = databaseRef.child("users").child(userId)
+        userRef.child("beseda").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val besedaIds = dataSnapshot.children.mapNotNull { it.getValue(Int::class.java) }
+                fetchBesedasByIds(besedaIds) { besedas ->
+                    // Обновляем список бесед во фрагменте
+                    besedas?.let {
+                        chatsFragment?.updateBesedas(it)
+                    }
+                    // Обновляем список бесед в DataRepository
+                    setBesedas(besedas ?: emptyList())
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Ошибка при загрузке бесед: ${databaseError.message}")
+            }
+        })
+    }
 
     fun getBesedasLiveData() : LiveData<List<Beseda>> {
         return besedaLiveData
@@ -53,7 +118,8 @@ class DataRepository private constructor() {
         }
     }
 
-    fun getBesedas(): List<Beseda>? {
+
+    fun getBesedas(): List<Beseda> {
         synchronized(this) {
             if (this.besedas.isNotEmpty()) {
                 return this.besedas
@@ -66,7 +132,6 @@ class DataRepository private constructor() {
             return besedas
         }
     }
-
 
     fun setBesedas(b : List<Beseda>) {
         synchronized(this) {
@@ -84,11 +149,6 @@ class DataRepository private constructor() {
             usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val userList = mutableListOf<User>()
-//                    for (snapshot in dataSnapshot.children) {
-//
-//                        val user = snapshot.getValue(User::class.java)
-//                        user?.let { userList.add(it) }
-//                    }
                     dataSnapshot.children.forEach { snapshot ->
                         val login = snapshot.child("login").getValue(String::class.java)
                         val id = snapshot.child("id").getValue(String::class.java)
@@ -113,29 +173,6 @@ class DataRepository private constructor() {
             })
         }
     }
-
-    fun listenForBesedaChanges(userId: String) {
-        val userRef = databaseRef.child("users").child(userId)
-        userRef.child("beseda").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val besedaIds = dataSnapshot.children.mapNotNull { it.getValue(Int::class.java) }
-                fetchBesedasByIds(besedaIds) { besedas ->
-                    // Обновляем список бесед во фрагменте
-                    besedas?.let {
-                        chatsFragment?.updateBesedas(it)
-                    }
-                    // Обновляем список бесед в DataRepository
-                    setBesedas(besedas ?: emptyList())
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                println("Ошибка при загрузке бесед: ${databaseError.message}")
-            }
-        })
-    }
-
-
 
 
     fun getBesedasForUser(userId: String, callback: (List<Beseda>?) -> Unit) {
@@ -163,16 +200,21 @@ class DataRepository private constructor() {
     }
 
 
-
-
-
     fun fetchBesedasByIds(besedaIds: List<Int>, callback: (List<Beseda>?) -> Unit) {
         val besedasRef = databaseRef.child("besedas")
         besedasRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val besedaList = dataSnapshot.children.mapNotNull { it.getValue(Beseda::class.java) }
-                    .filter { it.besedaId in besedaIds }
-                callback(besedaList)
+                val userList = mutableListOf<Beseda>()
+
+                dataSnapshot.children.forEach { snapshot ->
+                    val id = snapshot.child("besedaId").getValue(Int::class.java)
+                    val besedasId = mutableListOf<Messeng>()
+                    snapshot.child("messengs").children.mapNotNullTo(besedasId) { it.getValue(Messeng::class.java) }
+
+                    val user = id?.let { Beseda(besedasId, it) }
+                    user?.let { userList.add(it) }
+                }
+                callback(userList)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -181,5 +223,4 @@ class DataRepository private constructor() {
             }
         })
     }
-
 }

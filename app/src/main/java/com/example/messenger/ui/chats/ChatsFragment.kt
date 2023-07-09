@@ -45,7 +45,7 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
 
     private fun initAdapter() {
         adapter = ChatsAdapter(DataRepository.getInstance().getBesedas() ?: emptyList()) { chat ->
-            val bundle = onNavigation(sessionId)
+            val bundle = onNavigation(chat.besedaId)
             findNavController().navigate(
                 R.id.action_navigation_chats_to_navigation_dialog,
                 bundle
@@ -56,11 +56,18 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
         }
     }
 
+    companion object {
+        private fun onNavigation(besedaId: Int): Bundle {
+            val bundle = Bundle()
+            bundle.putInt("name", besedaId)
+            return bundle
+        }
+    }
+
     fun updateBesedas(besedas: List<Beseda>) {
         adapter?.setData(besedas)
         adapter?.notifyDataSetChanged()
     }
-
 
 
     private fun startDataUpdateLoop() {
@@ -79,7 +86,7 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
 
 
     private fun updateData() {
-        Log.i("Iter", "Yes")
+//        Log.i("Iter", "Yes")
         val besedas = DataRepository.getInstance().getBesedas()
         adapter?.setData(besedas ?: emptyList())
         adapter?.notifyDataSetChanged()
@@ -112,15 +119,6 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
 
         usersDialog = builder.create()
         usersDialog?.show()
-    }
-
-
-    companion object {
-        private fun onNavigation(sessionId: String): Bundle {
-            val bundle = Bundle()
-            bundle.putString("name", "KEK")
-            return bundle
-        }
     }
 
     override fun onDestroy() {

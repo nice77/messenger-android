@@ -1,33 +1,33 @@
 package com.example.messenger.ui.dialog
 
-import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.core.view.marginStart
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.messenger.databinding.MyMessageItemBinding
 import com.example.messenger.databinding.OtherMessageItemBinding
+import com.example.messenger.messanger.Beseda
+import com.example.messenger.messanger.DataRepository
+import com.example.messenger.messanger.Messeng
 import com.google.firebase.database.FirebaseDatabase
 
 class MessagesAdapter(
-    private val messages: List<Message>,
-    private val fbDB: FirebaseDatabase
+    var messages: List<Messeng>,
 ) : RecyclerView.Adapter<ViewHolder>() {
 
     class MyMessagesViewHolder(
         private val binding : MyMessageItemBinding
     ) : ViewHolder(binding.root) {
-        fun onBind(message : Message) {
+        fun onBind(message : Messeng) {
             binding.run {
-                tvUsername.text = getUsername(message.fromId) //message.toId.toString() // Нужно решить!
-                tvMessage.text = "MyMessagesViewHolder"
+                tvUsername.text = getUsername(message.from) //message.toId.toString() // Нужно решить!
+                tvMessage.text = message.msg
+                tvTime.text = message.date_time
             }
         }
 
-        fun getUsername(id : Int) : String {
+        fun getUsername(id: String) : String {
             //По-хорошему тут нужен запрос в БД, а не хранение в оперативке пользователей
             //Нужно доработатб
             return "noice"
@@ -37,14 +37,15 @@ class MessagesAdapter(
     class OtherMessagesViewHolder(
         private val binding : OtherMessageItemBinding
     ) : ViewHolder(binding.root) {
-        fun onBind(message : Message) {
+        fun onBind(message : Messeng) {
             binding.run {
-                tvUsername.text = getUsername(message.fromId) //message.toId.toString() // Нужно решить!
-                tvMessage.text = "OtherMessagesViewHolder"
+                tvUsername.text = getUsername(message.from) //message.toId.toString() // Нужно решить!
+                tvMessage.text = message.msg
+                tvTime.text = message.date_time
             }
         }
 
-        fun getUsername(id : Int) : String {
+        fun getUsername(id : String) : String {
             //По-хорошему тут нужен запрос в БД, а не хранение в оперативке пользователей
             //Нужно доработатб
             return "noice"
@@ -52,7 +53,7 @@ class MessagesAdapter(
     }
 
     override fun getItemViewType(position: Int) : Int {
-        if (messages[position].fromId == 1) {
+        if (messages[position].from == DataRepository.getInstance().getUser()) {
             return 0
         }
         return 1
@@ -72,20 +73,19 @@ class MessagesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//        println("Position: " + messages[position].fromId + " " + messages[position])
-//        if (messages[position].fromId == 0) {
-//            println("uno")
-//            (holder as MyMessagesViewHolder).onBind(messages[position])
-//        }
-//        else {
-//            (holder as OtherMessagesViewHolder).onBind(messages[position])
-//        }
-
         if (holder is MyMessagesViewHolder) {
             holder.onBind(messages[position])
         }
         else if (holder is OtherMessagesViewHolder) {
             holder.onBind(messages[position])
+        }
+    }
+
+    fun setData(newMessages: List<Messeng>?) {
+        if (newMessages!!.size != 0) {
+            messages = newMessages
+            notifyDataSetChanged()
+            println("Messages in adapter: " + messages)
         }
     }
 }
