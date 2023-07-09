@@ -1,5 +1,7 @@
 package com.example.messenger.messanger
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
 import java.util.LinkedList
@@ -8,6 +10,7 @@ import java.util.concurrent.CountDownLatch
 class DataRepository private constructor() {
 
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+    private val besedaLiveData = MutableLiveData<List<Beseda>>()
     private val databaseRef: DatabaseReference = database.reference
     private var users: List<User>? = null
     private var besedas = mutableListOf<Beseda>()
@@ -22,6 +25,10 @@ class DataRepository private constructor() {
             }
             return instance as DataRepository
         }
+    }
+
+    fun getBesedasLiveData() : LiveData<List<Beseda>> {
+        return besedaLiveData
     }
 
     fun setUser(uid: String) {

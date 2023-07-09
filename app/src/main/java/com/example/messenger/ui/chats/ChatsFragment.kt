@@ -1,6 +1,9 @@
 package com.example.messenger.ui.chats
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -8,17 +11,14 @@ import com.example.messenger.R
 import com.example.messenger.databinding.FragmentChatsBinding
 import com.example.messenger.messanger.Beseda
 import com.example.messenger.messanger.DataRepository
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.values
-import com.google.firebase.ktx.Firebase
 
 class ChatsFragment : Fragment(R.layout.fragment_chats) {
 
-    private var binding: FragmentChatsBinding ?= null
-    private var adapter: ChatsAdapter ?= null
-    private var sessionId : String = DataRepository.getInstance().getUser()
+    private var dataUpdated = false
+
+    private var binding: FragmentChatsBinding? = null
+    private var adapter: ChatsAdapter? = null
+    private var sessionId: String = DataRepository.getInstance().getUser()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,27 +29,50 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentChatsBinding.bind(view)
         initAdapter()
+        startDataUpdateLoop()
     }
 
     private fun initAdapter() {
-        println("Kek: " + DataRepository.getInstance().getBesedas() + " User: " + DataRepository.getInstance().getUser())
-        adapter = DataRepository.getInstance().getBesedas()?.let {
-            ChatsAdapter(
-                it
-            ) { chat ->
-                findNavController().navigate(
-                    R.id.action_navigation_chats_to_navigation_dialog,
-                    sessionId.let { onNavigation(it) }
-                )
-            }
+        adapter = ChatsAdapter(DataRepository.getInstance().getBesedas() ?: emptyList()) { chat ->
+            val bundle = onNavigation(sessionId)
+            findNavController().navigate(
+                R.id.action_navigation_chats_to_navigation_dialog,
+                bundle
+            )
         }
         binding?.run {
             rvChatList.adapter = adapter
         }
     }
 
+    private fun startDataUpdateLoop() {
+        val handler = Handler(Looper.getMainLooper())
+        val runnable = object : Runnable {
+            override fun run() {
+                updateData()
+                if (!dataUpdated) {
+                    handler.postDelayed(this, 2000) // Update every 2 seconds until data is updated
+                }
+            }
+        }
+        handler.postDelayed(runnable, 2000)
+    }
+
+    private fun updateData() {
+        Log.i("Iter", "Yes")
+        val besedas = DataRepository.getInstance().getBesedas()
+        adapter?.setData(besedas ?: emptyList())
+        adapter?.notifyDataSetChanged()
+
+        // Check if data is updated
+        if (!besedas.isNullOrEmpty()) {
+            dataUpdated = true
+        }
+    }
+
+
     companion object {
-        private fun onNavigation(sessionId : String) : Bundle {
+        private fun onNavigation(sessionId: String): Bundle {
             val bundle = Bundle()
             bundle.putString("name", "KEK")
             return bundle
