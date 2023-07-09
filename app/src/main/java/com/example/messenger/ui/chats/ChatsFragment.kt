@@ -138,15 +138,6 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
     }
 
 
-
-    companion object {
-        private fun onNavigation(besedaId: Int): Bundle {
-            val bundle = Bundle()
-            bundle.putInt("name", besedaId)
-            return bundle
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(updateRunnable)
@@ -154,9 +145,5 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
         binding = null
     }
 
-    fun updateBesedas(besedas: List<Beseda>) {
-        adapter?.setData(besedas)
-        adapter?.notifyDataSetChanged()
-    }
 }
 

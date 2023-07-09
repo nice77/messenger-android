@@ -178,27 +178,6 @@ class DataRepository private constructor() {
         }
     }
 
-    fun listenForBesedaChanges(userId: String) {
-        val userRef = databaseRef.child("users").child(userId)
-        userRef.child("beseda").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val besedaIds = dataSnapshot.children.mapNotNull { it.getValue(Int::class.java) }
-                fetchBesedasByIds(besedaIds) { besedas ->
-                    // Обновляем список бесед во фрагменте
-                    besedas?.let {
-                        chatsFragment?.updateBesedas(it)
-                    }
-                    // Обновляем список бесед в DataRepository
-                    setBesedas(besedas ?: emptyList())
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                println("Ошибка при загрузке бесед: ${databaseError.message}")
-            }
-        })
-    }
-
     fun hasCommonBesedaWithUser(user: User): Int? {
         val currentUserBesedas = getBesedas() ?: return null
         val userBesedas = user.beseda
@@ -211,8 +190,6 @@ class DataRepository private constructor() {
         }
         return null
     }
-
-
 
 
     fun getBesedasForUser(userId: String, callback: (List<Beseda>?) -> Unit) {
