@@ -18,10 +18,14 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
 
     private var binding: FragmentChatsBinding? = null
     private var adapter: ChatsAdapter? = null
+    private var newDataAvailable = false
+
     private var sessionId: String = DataRepository.getInstance().getUser()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DataRepository.getInstance().setChatsFragment(this)
+
         sessionId = DataRepository.getInstance().getUser()
     }
 
@@ -45,6 +49,13 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
         }
     }
 
+    fun updateBesedas(besedas: List<Beseda>) {
+        adapter?.setData(besedas)
+        adapter?.notifyDataSetChanged()
+    }
+
+
+
     private fun startDataUpdateLoop() {
         val handler = Handler(Looper.getMainLooper())
         val runnable = object : Runnable {
@@ -58,6 +69,8 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
         handler.postDelayed(runnable, 2000)
     }
 
+
+
     private fun updateData() {
         Log.i("Iter", "Yes")
         val besedas = DataRepository.getInstance().getBesedas()
@@ -66,9 +79,10 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
 
         // Check if data is updated
         if (!besedas.isNullOrEmpty()) {
-            dataUpdated = true
+            newDataAvailable = true
         }
     }
+
 
 
     companion object {

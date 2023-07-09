@@ -2,6 +2,7 @@ package com.example.messenger.messanger
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.messenger.ui.chats.ChatsFragment
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
 import java.util.LinkedList
@@ -14,6 +15,7 @@ class DataRepository private constructor() {
     private val databaseRef: DatabaseReference = database.reference
     private var users: List<User>? = null
     private var besedas = mutableListOf<Beseda>()
+    private var chatsFragment: ChatsFragment? = null
     private var user = ""
 
     companion object {
@@ -26,6 +28,12 @@ class DataRepository private constructor() {
             return instance as DataRepository
         }
     }
+
+    fun setChatsFragment(fragment: ChatsFragment) {
+        chatsFragment = fragment
+        listenForBesedaChanges(user)
+    }
+
 
     fun getBesedasLiveData() : LiveData<List<Beseda>> {
         return besedaLiveData
@@ -105,6 +113,30 @@ class DataRepository private constructor() {
             })
         }
     }
+
+    fun listenForBesedaChanges(userId: String) {
+        val userRef = databaseRef.child("users").child(userId)
+        userRef.child("beseda").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val besedaIds = dataSnapshot.children.mapNotNull { it.getValue(Int::class.java) }
+                fetchBesedasByIds(besedaIds) { besedas ->
+                    // Обновляем список бесед во фрагменте
+                    besedas?.let {
+                        chatsFragment?.updateBesedas(it)
+                    }
+                    // Обновляем список бесед в DataRepository
+                    setBesedas(besedas ?: emptyList())
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Ошибка при загрузке бесед: ${databaseError.message}")
+            }
+        })
+    }
+
+
+
 
     fun getBesedasForUser(userId: String, callback: (List<Beseda>?) -> Unit) {
         val userRef = databaseRef.child("users").child(userId)

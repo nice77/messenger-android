@@ -101,6 +101,5 @@ class MainActivity : AppCompatActivity() {
         binding.navView.setupWithNavController(navController)
         NavigationUI.setupWithNavController(binding.navView, navController, false)
     }
-
 }
 
