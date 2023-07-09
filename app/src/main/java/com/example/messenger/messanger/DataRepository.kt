@@ -38,19 +38,20 @@ class DataRepository private constructor() {
         }
     }
 
-    fun getBesedas() : List<Beseda>? {
+    fun getBesedas(): List<Beseda>? {
         synchronized(this) {
-            if (this.besedas != null) {
+            if (this.besedas.isNotEmpty()) {
                 return this.besedas
             }
-            getBesedasForUser(user) {
-                if (it != null) {
+            getBesedasForUser(user) { fetchedBesedas ->
+                fetchedBesedas?.let {
                     this.besedas.addAll(it)
                 }
             }
             return besedas
         }
     }
+
 
     fun setBesedas(b : List<Beseda>) {
         synchronized(this) {
@@ -73,31 +74,19 @@ class DataRepository private constructor() {
 //                        val user = snapshot.getValue(User::class.java)
 //                        user?.let { userList.add(it) }
 //                    }
-                    for (snapshot in dataSnapshot.children) {
+                    dataSnapshot.children.forEach { snapshot ->
                         val login = snapshot.child("login").getValue(String::class.java)
                         val id = snapshot.child("id").getValue(String::class.java)
                         val email = snapshot.child("email").getValue(String::class.java)
                         val fcmtoken = snapshot.child("fcmtoken").getValue(String::class.java)
 
-                        var besedasId = mutableListOf<Int>()
+                        val besedasId = mutableListOf<Int>()
+                        snapshot.child("beseda").children.mapNotNullTo(besedasId) { it.getValue(Int::class.java) }
 
-                        for (besedasChilfren in snapshot.child("beseda").children) {
-                            val besedasI = besedasChilfren.getValue(Int::class.java)
-                            besedasI?.let { besedasId.add(it) }
-                        }
-
-                        if (login != null && id != null && email != null && fcmtoken != null) {
-                            val user = User(login, id, email, fcmtoken, besedasId)
-                            userList.add(user)
-                        } else {
-                            val user = User("", "", "", "", besedasId)
-                            userList.add(user)
-                        }
-//                        val user = User(login = login, id = id, email = email, fcmtoken = fcmtoken)
-//                        val user = snapshot.getValue(User::class.java)
-
-//                        userList.add(user)
+                        val user = User(login ?: "", id ?: "", email ?: "", fcmtoken ?: "", besedasId)
+                        userList.add(user)
                     }
+
                     users = userList
                     callback(users)
                 }
@@ -114,8 +103,7 @@ class DataRepository private constructor() {
         val userRef = databaseRef.child("users").child(userId)
         userRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val besedaIds =
-                    dataSnapshot.child("beseda").children.mapNotNull { it.getValue(Int::class.java) }
+                val besedaIds = dataSnapshot.child("beseda").children.mapNotNull { it.getValue(Int::class.java) }
                 fetchBesedasByIds(besedaIds, callback)
             }
 
@@ -129,17 +117,13 @@ class DataRepository private constructor() {
 
 
 
+
     fun fetchBesedasByIds(besedaIds: List<Int>, callback: (List<Beseda>?) -> Unit) {
         val besedasRef = databaseRef.child("besedas")
         besedasRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val besedaList = mutableListOf<Beseda>()
-                for (snapshot in dataSnapshot.children) {
-                    val beseda = snapshot.getValue(Beseda::class.java)
-                    if (beseda != null && besedaIds.contains(beseda.besedaId)) {
-                        besedaList.add(beseda)
-                    }
-                }
+                val besedaList = dataSnapshot.children.mapNotNull { it.getValue(Beseda::class.java) }
+                    .filter { it.besedaId in besedaIds }
                 callback(besedaList)
             }
 
@@ -149,4 +133,5 @@ class DataRepository private constructor() {
             }
         })
     }
+
 }
