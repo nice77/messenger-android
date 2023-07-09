@@ -9,7 +9,7 @@ class CreateBeseda {
     private val databaseRef: DatabaseReference = database.reference
 
 
-    fun createBeseda(userIds: List<String>?) {
+    fun createBeseda(userIds: List<String>?): Int? {
         if (userIds != null) {
             val besedaId = generateBesedaId()
             val messages = emptyList<Messeng>()
@@ -26,8 +26,12 @@ class CreateBeseda {
                 val userRef = databaseRef.child("users").child(userId).child("beseda").push()
                 userRef.setValue(besedaId)
             }
+            DataRepository.getInstance().addBeseda(beseda)
+            return beseda.besedaId
         }
+        return null;
     }
+
 
     
 
