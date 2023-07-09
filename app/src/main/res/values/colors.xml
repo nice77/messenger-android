@@ -12,4 +12,5 @@
     <color name="background">#FFFFFF</color>
     <color name="defoultColor">#FF6200EE</color>
     <color name="secondColor">#FFC107</color>
+    <color name="greenColor">#07FF6A</color>
 </resources>

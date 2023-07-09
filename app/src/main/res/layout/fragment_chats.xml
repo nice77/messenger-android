@@ -23,8 +23,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_horizontal_margin"
+        android:backgroundTint="@color/defoultColor"
         android:src="@drawable/baseline_chat_24"
         app:layout_constraintBottom_toBottomOf="@id/rv_chat_list"
         app:layout_constraintEnd_toEndOf="@id/rv_chat_list" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
