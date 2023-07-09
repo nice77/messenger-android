@@ -1,16 +1,22 @@
 package com.example.messenger.messanger
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.example.messenger.ui.chats.ChatsFragment
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
+import java.util.LinkedList
 import java.util.concurrent.CountDownLatch
 
 class DataRepository private constructor() {
 
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+    private val besedaLiveData = MutableLiveData<List<Beseda>>()
     private val databaseRef: DatabaseReference = database.reference
-    private var users: List<User>? = null
-    private var besedas: List<Beseda>? = null
-    public lateinit var user: String
+    private var users: MutableList<User>? = null
+    private var besedas = mutableListOf<Beseda>()
+    private var chatsFragment: ChatsFragment? = null
+    private var user = ""
 
     companion object {
         private var instance: DataRepository? = null
@@ -20,6 +26,51 @@ class DataRepository private constructor() {
                 instance = DataRepository()
             }
             return instance as DataRepository
+        }
+    }
+
+    fun setChatsFragment(fragment: ChatsFragment) {
+        chatsFragment = fragment
+        listenForBesedaChanges(user)
+    }
+
+
+    fun getBesedasLiveData() : LiveData<List<Beseda>> {
+        return besedaLiveData
+    }
+
+    fun setUser(uid: String) {
+        synchronized(this) {
+            this.user = uid
+            println("User: " + user)
+            getBesedas()
+        }
+    }
+
+    fun getUser() : String {
+        synchronized(this) {
+            return this.user
+        }
+    }
+
+    fun getBesedas(): List<Beseda>? {
+        synchronized(this) {
+            if (this.besedas.isNotEmpty()) {
+                return this.besedas
+            }
+            getBesedasForUser(user) { fetchedBesedas ->
+                fetchedBesedas?.let {
+                    this.besedas.addAll(it)
+                }
+            }
+            return besedas
+        }
+    }
+
+
+    fun setBesedas(b : List<Beseda>) {
+        synchronized(this) {
+            this.besedas = b as MutableList<Beseda>
         }
     }
 
@@ -38,31 +89,19 @@ class DataRepository private constructor() {
 //                        val user = snapshot.getValue(User::class.java)
 //                        user?.let { userList.add(it) }
 //                    }
-                    for (snapshot in dataSnapshot.children) {
+                    dataSnapshot.children.forEach { snapshot ->
                         val login = snapshot.child("login").getValue(String::class.java)
                         val id = snapshot.child("id").getValue(String::class.java)
                         val email = snapshot.child("email").getValue(String::class.java)
                         val fcmtoken = snapshot.child("fcmtoken").getValue(String::class.java)
 
-                        var besedasId = mutableListOf<Int>()
+                        val besedasId = mutableListOf<Int>()
+                        snapshot.child("beseda").children.mapNotNullTo(besedasId) { it.getValue(Int::class.java) }
 
-                        for (besedasChilfren in snapshot.child("beseda").children) {
-                            val besedasI = besedasChilfren.getValue(Int::class.java)
-                            besedasI?.let { besedasId.add(it) }
-                        }
-
-                        if (login != null && id != null && email != null && fcmtoken != null) {
-                            val user = User(login, id, email, fcmtoken, besedasId)
-                            userList.add(user)
-                        } else {
-                            val user = User("", "", "", "", besedasId)
-                            userList.add(user)
-                        }
-//                        val user = User(login = login, id = id, email = email, fcmtoken = fcmtoken)
-//                        val user = snapshot.getValue(User::class.java)
-
-//                        userList.add(user)
+                        val user = User(login ?: "", id ?: "", email ?: "", fcmtoken ?: "", besedasId)
+                        userList.add(user)
                     }
+
                     users = userList
                     callback(users)
                 }
@@ -75,11 +114,35 @@ class DataRepository private constructor() {
         }
     }
 
-    fun fetchBesedasFromDatabase(userId: String, callback: (List<Beseda>?) -> Unit) {
+    fun listenForBesedaChanges(userId: String) {
         val userRef = databaseRef.child("users").child(userId)
-        userRef.addValueEventListener(object : ValueEventListener {
+        userRef.child("beseda").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val besedaIds = dataSnapshot.child("beseda").children.map { it.getValue(Int::class.java) }
+                val besedaIds = dataSnapshot.children.mapNotNull { it.getValue(Int::class.java) }
+                fetchBesedasByIds(besedaIds) { besedas ->
+                    // Обновляем список бесед во фрагменте
+                    besedas?.let {
+                        chatsFragment?.updateBesedas(it)
+                    }
+                    // Обновляем список бесед в DataRepository
+                    setBesedas(besedas ?: emptyList())
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Ошибка при загрузке бесед: ${databaseError.message}")
+            }
+        })
+    }
+
+
+
+
+    fun getBesedasForUser(userId: String, callback: (List<Beseda>?) -> Unit) {
+        val userRef = databaseRef.child("users").child(userId)
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val besedaIds = dataSnapshot.child("beseda").children.mapNotNull { it.getValue(Int::class.java) }
                 fetchBesedasByIds(besedaIds, callback)
             }
 
@@ -90,34 +153,33 @@ class DataRepository private constructor() {
         })
     }
 
-    private fun fetchBesedasByIds(besedaIds: List<Int?>, callback: (List<Beseda>?) -> Unit) {
-        if (besedaIds == null || besedaIds.isEmpty()) {
-            callback(emptyList())
-            return
+    fun getUsers(): MutableList<User>? {
+        if (this.users == null) {
+            fetchUsersFromDatabase {
+                it?.let { it1 -> this.users?.addAll(it1) }
+            }
         }
-
-        val besedasRef = databaseRef.child("besedas")
-        val besedaList = mutableListOf<Beseda>()
-        val countDownLatch = CountDownLatch(besedaIds.size)
-
-        for (besedaId in besedaIds) {
-            val besedaRef = besedasRef.child(besedaId.toString())
-            besedaRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val beseda = dataSnapshot.getValue(Beseda::class.java)
-                    beseda?.let { besedaList.add(it) }
-                    countDownLatch.countDown()
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    println("Ошибка при загрузке беседы: ${databaseError.message}")
-                    countDownLatch.countDown()
-                }
-            })
-        }
-
-        countDownLatch.await()
-        besedas = besedaList
-        callback(besedas)
+        return this.users
     }
+
+
+
+
+
+    fun fetchBesedasByIds(besedaIds: List<Int>, callback: (List<Beseda>?) -> Unit) {
+        val besedasRef = databaseRef.child("besedas")
+        besedasRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val besedaList = dataSnapshot.children.mapNotNull { it.getValue(Beseda::class.java) }
+                    .filter { it.besedaId in besedaIds }
+                callback(besedaList)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Ошибка при загрузке бесед: ${databaseError.message}")
+                callback(null)
+            }
+        })
+    }
+
 }

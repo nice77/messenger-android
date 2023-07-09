@@ -1,14 +1,17 @@
 package com.example.messenger.ui.dialog
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.messenger.R
 import com.example.messenger.databinding.FragmentDialogBinding
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class DialogFragment : Fragment(R.layout.fragment_dialog) {
@@ -44,7 +47,7 @@ class DialogFragment : Fragment(R.layout.fragment_dialog) {
 
     private var binding : FragmentDialogBinding ?= null
     private var adapter : MessagesAdapter ?= null
-    private var firebaseDB : FirebaseDatabase ?= null
+    private lateinit var firebaseDB : FirebaseDatabase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,7 +57,7 @@ class DialogFragment : Fragment(R.layout.fragment_dialog) {
     }
 
     fun initAdapter() {
-        adapter = MessagesAdapter(MessagesRepo.messagesList)
+        adapter = MessagesAdapter(MessagesRepo.messagesList, firebaseDB)
         binding?.run {
             rvMessages.adapter = adapter
         }

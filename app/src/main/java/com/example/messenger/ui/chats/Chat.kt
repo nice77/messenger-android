@@ -1,3 +1,5 @@
 package com.example.messenger.ui.chats
 
-data class Chat(val name : String, val message : String, val toId: Int = 0)
+import com.example.messenger.messanger.Messeng
+
+data class Chat(var messengs: List<Messeng>, val besedaId: Int)

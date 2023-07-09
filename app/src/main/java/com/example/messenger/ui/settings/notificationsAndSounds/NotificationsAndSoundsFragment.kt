@@ -27,6 +27,9 @@ class NotificationsAndSoundsFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         binding.button.setOnClickListener {
+
+            println("From notifications" + DataRepository.getInstance().getUser())
+
             var listOfUserId: List<String> = emptyList()
             DataRepository.getInstance().fetchUsersFromDatabase {users ->
                 users?.let {usersList ->

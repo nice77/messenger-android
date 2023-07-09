@@ -10,4 +10,7 @@
     <color name="textName">#FFFFFF</color>
     <color name="textButton">#FFFFFF</color>
     <color name="background">#000000</color>
+    <color name="defoultColor">#44FF00</color>
+    <color name="secondColor">#FF0707</color>
+    <color name="greenColor">#07FF6A</color>
 </resources>

@@ -96,7 +96,7 @@ class RegisterActivity : AppCompatActivity() {
                                 .addOnSuccessListener { token ->
                                     val userId = firebaseUser.uid
                                     userId?.let { usersRef.child(it).setValue(User(loginName, userId, email, token, emptyList())) }
-                                    DataRepository.getInstance().user = userId
+                                    DataRepository.getInstance().setUser(userId)
 
 
 
