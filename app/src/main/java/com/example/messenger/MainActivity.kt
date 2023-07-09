@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
@@ -26,14 +27,28 @@ class MainActivity : AppCompatActivity() {
     private val SWITCH_PREFS: String = "SWITCH"
     private lateinit var sharedPreferences: SharedPreferences
     private val PREF_FIRST_RUN = "first_run"
+    private lateinit var navController: NavController
+    private lateinit var appBarConfiguration: AppBarConfiguration
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        unit()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        navController = findNavController(R.id.nav_host_fragment_activity_main)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_chats, R.id.navigation_dialog, R.id.navigation_settings
+            )
+        )
+
+
+//        Включить как только разберемся с темной темой
+                unit()
+
 
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
@@ -82,15 +97,10 @@ class MainActivity : AppCompatActivity() {
     fun loadingFragment(besedas: List<Beseda>) {
         DataRepository.getInstance().setBesedas(besedas)
 
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_chats, R.id.navigation_dialog, R.id.navigation_settings
-            )
-        )
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
         NavigationUI.setupWithNavController(binding.navView, navController, false)
     }
+
 }
 
