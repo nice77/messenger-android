@@ -13,31 +13,30 @@ import androidx.navigation.fragment.findNavController
 import com.example.messenger.R
 import com.example.messenger.databinding.FragmentChatsBinding
 import com.example.messenger.messanger.Beseda
+import com.example.messenger.messanger.CreateBeseda
 import com.example.messenger.messanger.DataRepository
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ChatsFragment : Fragment(R.layout.fragment_chats) {
 
     private var dataUpdated = false
-
     private var binding: FragmentChatsBinding? = null
     private var adapter: ChatsAdapter? = null
     private var newDataAvailable = false
     private var usersDialog: AlertDialog? = null
     private var sessionId: String = DataRepository.getInstance().getUser()
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateRunnable = Runnable { updateData() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataRepository.getInstance().setChatsFragment(this)
-
         sessionId = DataRepository.getInstance().getUser()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentChatsBinding.bind(view)
-
-
         initAdapter()
         startDataUpdateLoop()
         setupFab()
@@ -71,19 +70,8 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
 
 
     private fun startDataUpdateLoop() {
-        val handler = Handler(Looper.getMainLooper())
-        val runnable = object : Runnable {
-            override fun run() {
-                updateData()
-                if (!dataUpdated) {
-                    handler.postDelayed(this, 2000) // Update every 2 seconds until data is updated
-                }
-            }
-        }
-        handler.postDelayed(runnable, 2000)
+        handler.postDelayed(updateRunnable, 2000)
     }
-
-
 
     private fun updateData() {
 //        Log.i("Iter", "Yes")
@@ -95,8 +83,11 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
         if (!besedas.isNullOrEmpty()) {
             newDataAvailable = true
         }
-    }
 
+        if (!dataUpdated) {
+            handler.postDelayed(updateRunnable, 2000)
+        }
+    }
 
     private fun setupFab() {
         val fabAddUser: FloatingActionButton = requireView().findViewById(R.id.fab_add_user)
@@ -119,11 +110,53 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
 
         usersDialog = builder.create()
         usersDialog?.show()
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val selectedUser = users?.getOrNull(position)
+            selectedUser?.let {
+//                DataRepository.getInstance().setUsers()
+
+                var hasCommonBeseda = DataRepository.getInstance().hasCommonBesedaWithUser(it)
+                var message = ""
+                if (hasCommonBeseda != null) {
+                    message = "У вас есть общая беседа с пользователем $it"
+                } else {
+                    message = "У вас нет общей беседы с пользователем $it"
+                    val createBeseda = CreateBeseda()
+                    hasCommonBeseda = createBeseda.createBeseda(listOf(DataRepository.getInstance().getUser(), it.id))
+                }
+
+                Log.i("Clicked User Email", message)
+                val bundle = hasCommonBeseda?.let { it1 -> onNavigation(it1) }
+                findNavController().navigate(
+                    R.id.action_navigation_chats_to_navigation_dialog,
+                    bundle
+                )
+            }
+            usersDialog?.dismiss()
+        }
+    }
+
+
+
+    companion object {
+        private fun onNavigation(besedaId: Int): Bundle {
+            val bundle = Bundle()
+            bundle.putInt("name", besedaId)
+            return bundle
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        handler.removeCallbacks(updateRunnable)
         usersDialog?.dismiss()
         binding = null
     }
+
+    fun updateBesedas(besedas: List<Beseda>) {
+        adapter?.setData(besedas)
+        adapter?.notifyDataSetChanged()
+    }
 }
+

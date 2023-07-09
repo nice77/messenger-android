@@ -99,6 +99,10 @@ class DataRepository private constructor() {
             }
         })
     }
+    fun addBeseda(ids: Beseda) {
+        this.besedas.add(ids)
+    }
+
 
     fun getBesedasLiveData() : LiveData<List<Beseda>> {
         return besedaLiveData
@@ -174,6 +178,42 @@ class DataRepository private constructor() {
         }
     }
 
+    fun listenForBesedaChanges(userId: String) {
+        val userRef = databaseRef.child("users").child(userId)
+        userRef.child("beseda").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val besedaIds = dataSnapshot.children.mapNotNull { it.getValue(Int::class.java) }
+                fetchBesedasByIds(besedaIds) { besedas ->
+                    // Обновляем список бесед во фрагменте
+                    besedas?.let {
+                        chatsFragment?.updateBesedas(it)
+                    }
+                    // Обновляем список бесед в DataRepository
+                    setBesedas(besedas ?: emptyList())
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Ошибка при загрузке бесед: ${databaseError.message}")
+            }
+        })
+    }
+
+    fun hasCommonBesedaWithUser(user: User): Int? {
+        val currentUserBesedas = getBesedas() ?: return null
+        val userBesedas = user.beseda
+        for (currentUserBeseda in currentUserBesedas) {
+            for (userBeseda in userBesedas) {
+                if (currentUserBeseda.besedaId == userBeseda) {
+                    return currentUserBeseda.besedaId
+                }
+            }
+        }
+        return null
+    }
+
+
+
 
     fun getBesedasForUser(userId: String, callback: (List<Beseda>?) -> Unit) {
         val userRef = databaseRef.child("users").child(userId)
@@ -197,6 +237,12 @@ class DataRepository private constructor() {
             }
         }
         return this.users
+    }
+
+    fun setUsers() {
+        fetchUsersFromDatabase {
+            it?.let { it1 -> this.users?.addAll(it1) }
+        }
     }
 
 
