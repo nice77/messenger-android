@@ -65,16 +65,14 @@ class DataRepository private constructor() {
                     val msg = s.getValue(Messeng::class.java)!!
                     mss.add(msg)
                 }
-                if (dialogFragment!!.adapter!!.messages != mss) {
+                if (dialogFragment!!.adapter!!.messages != mss && mss.size != 0) {
                     dialogFragment?.updateMessages(mss)
                     println("Data changed")
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                println("ERROR")
             }
-
         })
     }
 

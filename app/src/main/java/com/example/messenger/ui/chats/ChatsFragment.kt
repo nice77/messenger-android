@@ -45,6 +45,7 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
     private fun initAdapter() {
         adapter = ChatsAdapter(DataRepository.getInstance().getBesedas() ?: emptyList()) { chat ->
             val bundle = onNavigation(chat.besedaId)
+            DataRepository.getInstance().setBeseda(chat.besedaId.toString())
             findNavController().navigate(
                 R.id.action_navigation_chats_to_navigation_dialog,
                 bundle

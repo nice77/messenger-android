@@ -1,5 +1,6 @@
 package com.example.messenger.ui.dialog
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.marginStart
@@ -16,21 +17,23 @@ class MessagesAdapter(
     var messages: List<Messeng>,
 ) : RecyclerView.Adapter<ViewHolder>() {
 
+    // следующие два класса надо бы как-нибудь закинуть в один тырфейс
+    // а хотя...
+
     class MyMessagesViewHolder(
         private val binding : MyMessageItemBinding
     ) : ViewHolder(binding.root) {
         fun onBind(message : Messeng) {
             binding.run {
-                tvUsername.text = getUsername(message.from) //message.toId.toString() // Нужно решить!
                 tvMessage.text = message.msg
                 tvTime.text = message.date_time
             }
         }
 
-        fun getUsername(id: String) : String {
-            //По-хорошему тут нужен запрос в БД, а не хранение в оперативке пользователей
-            //Нужно доработатб
-            return "noice"
+        fun getUsername(id: String, callback: (String) -> Unit) {
+            DataRepository.getInstance().getDB().child("users").child(id).get().addOnSuccessListener {
+                callback(it.child("login").getValue(String::class.java).toString())
+            }
         }
     }
 
@@ -39,16 +42,18 @@ class MessagesAdapter(
     ) : ViewHolder(binding.root) {
         fun onBind(message : Messeng) {
             binding.run {
-                tvUsername.text = getUsername(message.from) //message.toId.toString() // Нужно решить!
+                getUsername(message.from) {
+                    tvUsername.setText(it)
+                }
                 tvMessage.text = message.msg
                 tvTime.text = message.date_time
             }
         }
 
-        fun getUsername(id : String) : String {
-            //По-хорошему тут нужен запрос в БД, а не хранение в оперативке пользователей
-            //Нужно доработатб
-            return "noice"
+        fun getUsername(id: String, callback: (String) -> Unit) {
+            DataRepository.getInstance().getDB().child("users").child(id).get().addOnSuccessListener {
+                callback(it.child("login").getValue(String::class.java).toString())
+            }
         }
     }
 
@@ -81,11 +86,11 @@ class MessagesAdapter(
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setData(newMessages: List<Messeng>?) {
         if (newMessages!!.size != 0) {
             messages = newMessages
             notifyDataSetChanged()
-            println("Messages in adapter: " + messages)
         }
     }
 }

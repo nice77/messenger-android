@@ -3,9 +3,6 @@ package com.example.messenger.ui.dialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -24,17 +21,27 @@ import com.google.firebase.database.FirebaseDatabase
 class DialogFragment : Fragment(R.layout.fragment_dialog) {
     private var binding : FragmentDialogBinding ?= null
     var adapter : MessagesAdapter ?= null
-    private var newDataAvailable = false
     private var dataUpdated = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         DataRepository.getInstance().setDialogFragment(this)
         binding = FragmentDialogBinding.bind(view)
-        DataRepository.getInstance().setBeseda(arguments?.getInt("name").toString())
         initAdapter()
         startDataUpdateLoop()
-        binding?.run{
+    }
+
+    fun initAdapter() {
+        var messages = mutableListOf<Messeng>()
+        getMessages {
+            messages.addAll(it)
+        }
+        println("Passing messages in adapter: " + messages.size)
+        adapter = MessagesAdapter(messages)
+
+        binding?.run {
+            rvMessages.adapter = adapter
+
             btnSend.setOnClickListener {
                 val text = tiMessage.text
                 val fromId = DataRepository.getInstance().getUser()
@@ -50,60 +57,36 @@ class DialogFragment : Fragment(R.layout.fragment_dialog) {
                     .child(DataRepository.getInstance().getBeseda())
                     .child("messengs")
                     .push()
+
                 ref.setValue(message)
+                dataUpdated = false
                 println("Added: " + message)
             }
-        }
-    }
-
-    fun initAdapter() {
-        var messages = mutableListOf<Messeng>()
-        getMessages {
-            messages.addAll(it)
-        }
-        adapter = MessagesAdapter(messages)
-
-        binding?.run {
-            rvMessages.adapter = adapter
         }
     }
 
     fun updateMessages(messages: List<Messeng>) {
         println("Called updateMessages from DataRepo. Messages: "  + messages)
         adapter?.setData(messages)
-        adapter?.notifyDataSetChanged()
     }
-
 
     private fun startDataUpdateLoop() {
         val handler = Handler(Looper.getMainLooper())
         val runnable = object : Runnable {
             override fun run() {
                 if (!dataUpdated) {
-                    updateData()
+                    val mss = mutableListOf<Messeng>()
+                    getMessages { mss.addAll(it) }
+                    println("received messages from loop: " + mss.size)
+                    if (mss.size != 0) {
+                        updateMessages(mss)
+                    }
                     handler.postDelayed(this, 2000) // Update every 2 seconds until data is updated
                     dataUpdated = true
                 }
             }
         }
         handler.postDelayed(runnable, 2000)
-    }
-
-    fun updateData() {
-        var messages = mutableListOf<Messeng>()
-        getMessages() {
-            messages.addAll(it)
-        }
-        if (messages != adapter!!.messages) {
-            println("On updateData(): " + messages)
-            adapter!!.setData(messages ?: emptyList())
-            adapter!!.notifyDataSetChanged()
-
-            // Check if data is updated
-            if (!messages.isNullOrEmpty()) {
-                newDataAvailable = true
-            }
-        }
     }
 
     private fun getMessages(callback: (List<Messeng>) -> Unit){
@@ -118,7 +101,6 @@ class DialogFragment : Fragment(R.layout.fragment_dialog) {
                     mss.add(s.getValue(Messeng::class.java)!!)
                 }
                 callback(mss)
-                adapter!!.notifyDataSetChanged()
             }
     }
 }
