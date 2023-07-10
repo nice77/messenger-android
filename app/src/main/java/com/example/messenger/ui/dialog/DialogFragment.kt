@@ -64,6 +64,8 @@ class DialogFragment : Fragment(R.layout.fragment_dialog) {
                     adapter!!.setData(mss)
                     rvMessages.scrollToPosition(mss.size - 1)
                 }
+
+                tiMessage.text = null
             }
         }
     }

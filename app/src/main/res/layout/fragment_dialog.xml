@@ -19,18 +19,19 @@
         android:id="@+id/ti_message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="bottom"
-        android:hint="Input message"
         android:layout_marginLeft="16sp"
         android:layout_marginRight="4sp"
+        android:gravity="bottom"
+        android:hint="Введите сообщение"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn_send"/>
+        app:layout_constraintEnd_toStartOf="@id/btn_send"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/baseline_send_24"
         android:layout_marginRight="16sp"
         android:layout_marginLeft="4sp"
         app:layout_constraintStart_toEndOf="@id/ti_message"
