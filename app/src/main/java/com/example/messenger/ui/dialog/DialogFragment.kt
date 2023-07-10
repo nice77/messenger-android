@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.messenger.R
@@ -81,6 +82,7 @@ class DialogFragment : Fragment(R.layout.fragment_dialog) {
                 if (toScroll) {
                     println("ToScroll")
                     toScroll = false
+                    handler.postDelayed(this, 2000)
                 }
 
                 if (!dataUpdated) {
