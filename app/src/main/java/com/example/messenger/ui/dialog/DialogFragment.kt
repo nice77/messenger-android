@@ -22,6 +22,7 @@ class DialogFragment : Fragment(R.layout.fragment_dialog) {
     private var binding : FragmentDialogBinding ?= null
     var adapter : MessagesAdapter ?= null
     private var dataUpdated = false
+    private var toScroll = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,7 +62,7 @@ class DialogFragment : Fragment(R.layout.fragment_dialog) {
 
                     ref.setValue(message)
                     dataUpdated = false
-                    adapter!!.setData(mss)
+                    updateMessages(mss)
                     rvMessages.scrollToPosition(mss.size - 1)
                 }
             }
@@ -69,18 +70,22 @@ class DialogFragment : Fragment(R.layout.fragment_dialog) {
     }
 
     fun updateMessages(messages: List<Messeng>) {
-        println("Called updateMessages from DataRepo. Messages: "  + messages)
         adapter?.setData(messages)
+        toScroll = true
     }
 
     private fun startDataUpdateLoop() {
         val handler = Handler(Looper.getMainLooper())
         val runnable = object : Runnable {
             override fun run() {
+                if (toScroll) {
+                    println("ToScroll")
+                    toScroll = false
+                }
+
                 if (!dataUpdated) {
                     val mss = mutableListOf<Messeng>()
                     getMessages { mss.addAll(it) }
-                    println("received messages from loop: " + mss.size)
                     if (mss.size != 0) {
                         updateMessages(mss)
                     }

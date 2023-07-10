@@ -228,6 +228,7 @@ class DataRepository private constructor() {
                 val userList = mutableListOf<Beseda>()
 
                 dataSnapshot.children.forEach { snapshot ->
+                    println("User Beseda" + snapshot)
                     val id = snapshot.child("besedaId").getValue(Int::class.java)
                     val besedasId = mutableListOf<Messeng>()
                     snapshot.child("messengs").children.mapNotNullTo(besedasId) { it.getValue(Messeng::class.java) }

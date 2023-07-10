@@ -66,7 +66,7 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
 
     fun updateBesedas(besedas: List<Beseda>) {
         adapter?.setData(besedas)
-        adapter?.notifyDataSetChanged()
+//        adapter?.notifyDataSetChanged()
     }
 
 

@@ -14,7 +14,7 @@ import com.example.messenger.messanger.Messeng
 import com.google.firebase.database.FirebaseDatabase
 
 class MessagesAdapter(
-    var messages: List<Messeng>,
+    var messages: List<Messeng>
 ) : RecyclerView.Adapter<ViewHolder>() {
 
     // следующие два класса надо бы как-нибудь закинуть в один тырфейс
