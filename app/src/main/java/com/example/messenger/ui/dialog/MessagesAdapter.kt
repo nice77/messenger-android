@@ -29,7 +29,8 @@ class MessagesAdapter(
                     tvUsername.setText(it)
                 }
                 tvMessage.text = message.msg
-                tvTime.text = message.date_time
+                val data = message.date_time.split("T").get(1).split(":")
+                tvTime.text = data[0] + ":" + data[1]
             }
         }
 
