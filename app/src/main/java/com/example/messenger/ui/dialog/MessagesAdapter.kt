@@ -26,7 +26,7 @@ class MessagesAdapter(
         fun onBind(message : Messeng) {
             binding.run {
                 getUsername(message.from) {
-                    tvUsername.setText(it)
+                    tvUsername.text = it
                 }
                 tvMessage.text = message.msg
                 val data = message.date_time.split("T").get(1).split(":")
@@ -35,9 +35,10 @@ class MessagesAdapter(
         }
 
         fun getUsername(id: String, callback: (String) -> Unit) {
-            DataRepository.getInstance().getDB().child("users").child(id).get().addOnSuccessListener {
-                callback(it.child("login").getValue(String::class.java).toString())
-            }
+            DataRepository.getInstance().getDB().child("users").child(id).get()
+                .addOnSuccessListener {
+                    callback(it.child("login").getValue(String::class.java).toString())
+                }
         }
     }
 
@@ -50,7 +51,8 @@ class MessagesAdapter(
                     tvUsername.setText(it)
                 }
                 tvMessage.text = message.msg
-                tvTime.text = message.date_time
+                val data = message.date_time.split("T").get(1).split(":")
+                tvTime.text = data[0] + ":" + data[1]
             }
         }
 

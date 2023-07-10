@@ -66,7 +66,7 @@ class DataRepository private constructor() {
                     mss.add(msg)
                 }
                 if (dialogFragment!!.adapter!!.messages != mss && mss.size != 0) {
-                    dialogFragment?.updateMessages(mss)
+                    dialogFragment!!.updateMessages(mss)
                     println("Data changed")
                 }
             }

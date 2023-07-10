@@ -23,7 +23,7 @@ class DialogFragment : Fragment(R.layout.fragment_dialog) {
     private var binding : FragmentDialogBinding ?= null
     var adapter : MessagesAdapter ?= null
     private var dataUpdated = false
-    private var toScroll = false
+    var toScroll = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -81,8 +81,22 @@ class DialogFragment : Fragment(R.layout.fragment_dialog) {
             override fun run() {
                 if (toScroll) {
                     println("ToScroll")
-                    toScroll = false
-                    handler.postDelayed(this, 2000)
+                    val mss = mutableListOf<Messeng>()
+                    getMessages {
+                        mss.addAll(it)
+                        val ref = DataRepository
+                            .getInstance()
+                            .getDB()
+                            .child("besedas")
+                            .child(DataRepository.getInstance().getBeseda())
+                            .child("messengs")
+                            .push()
+                        dataUpdated = false
+                        updateMessages(mss)
+                        binding!!.rvMessages.scrollToPosition(mss.size - 1)
+                        toScroll = false
+                        handler.postDelayed(this, 2000)
+                    }
                 }
 
                 if (!dataUpdated) {
