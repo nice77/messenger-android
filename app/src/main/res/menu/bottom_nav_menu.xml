@@ -9,8 +9,8 @@
     <item
         android:id="@+id/navigation_dialog"
         android:icon="@drawable/ic_dashboard_black_24dp"
-        android:visible="false"
-        android:title="@string/title_dashboard" />
+        android:title="@string/title_dashboard"
+        android:visible="false"/>
 
     <item
         android:id="@+id/navigation_settings"
