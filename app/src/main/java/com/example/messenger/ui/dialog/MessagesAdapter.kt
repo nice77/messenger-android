@@ -25,6 +25,9 @@ class MessagesAdapter(
     ) : ViewHolder(binding.root) {
         fun onBind(message : Messeng) {
             binding.run {
+                getUsername(message.from) {
+                    tvUsername.setText(it)
+                }
                 tvMessage.text = message.msg
                 tvTime.text = message.date_time
             }

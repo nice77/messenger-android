@@ -48,19 +48,22 @@ class DialogFragment : Fragment(R.layout.fragment_dialog) {
                 val message = Messeng(from = fromId, msg = text.toString())
 
                 val mss = mutableListOf<Messeng>()
-                getMessages { mss.addAll(it) }
-                mss.add(message)
-                val ref = DataRepository
-                    .getInstance()
-                    .getDB()
-                    .child("besedas")
-                    .child(DataRepository.getInstance().getBeseda())
-                    .child("messengs")
-                    .push()
+                getMessages {
+                    mss.addAll(it)
+                    mss.add(message)
+                    val ref = DataRepository
+                        .getInstance()
+                        .getDB()
+                        .child("besedas")
+                        .child(DataRepository.getInstance().getBeseda())
+                        .child("messengs")
+                        .push()
 
-                ref.setValue(message)
-                dataUpdated = false
-                println("Added: " + message)
+                    ref.setValue(message)
+                    dataUpdated = false
+                    adapter!!.setData(mss)
+                    rvMessages.scrollToPosition(mss.size - 1)
+                }
             }
         }
     }
